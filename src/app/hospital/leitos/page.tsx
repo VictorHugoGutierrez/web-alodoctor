@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/axios';
 import { useEffect } from 'react';
 import NavbarHospital from '@/components/hospital/navbarHospital';
-import { DtChamadosHospital } from '@/components/hospital/dtChamadosHospital';
+import { DtLeitosHospital } from '@/components/hospital/dtLeitosHospital';
 
 export default function Home() {
   // const router = useRouter();
@@ -34,12 +34,12 @@ export default function Home() {
   return (
     <>
       <head>
-        <title>Hospital | Chamados</title>
+        <title>Hospital | Leitos</title>
       </head>
       <div>
         <NavbarHospital />
         <div className="flex m-5">
-          <DtChamadosHospital />
+          <DtLeitosHospital />
         </div>
       </div>
     </>

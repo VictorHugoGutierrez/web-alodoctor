@@ -1,6 +1,10 @@
 'use client';
 
-import { ChevronDownIcon, DotsHorizontalIcon } from '@radix-ui/react-icons';
+import {
+  CaretSortIcon,
+  ChevronDownIcon,
+  DotsHorizontalIcon,
+} from '@radix-ui/react-icons';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -36,37 +40,31 @@ import {
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/axios';
 import { sonnerMessage } from '@/lib/sonnerMessage';
-import PerfilPacienteHospital from './perfilPacienteHospital';
-import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
+import { Chamado } from './dtChamadosHospital';
 
-export type Chamado = {
+export type Paciente = {
   id: number;
-  descricao: string;
-  prioridade: string;
-  paciente: {
-    id: number;
-    nome: string;
-  };
-  leito: {
-    numero: string;
-  };
+  nome: string;
+  email: string;
+  dataNascimento: string;
+  qtdChamados: Chamado[];
+  leito?: string | null;
 };
 
-export function DtChamadosHospital() {
-  const [data, setData] = useState<Chamado[]>([]);
+export function DtPacientesHospital() {
+  const [data, setData] = useState<Paciente[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await api.get(`/chamados`);
-        setData(response.data.chamados);
+        const response = await api.get(`/pacientes`);
+        setData(response.data.pacientes);
       } catch (error) {
-        console.error('Erro ao buscar os chamados:', error);
+        console.error('Erro ao buscar os pacientes:', error);
       }
     };
 
@@ -92,7 +90,7 @@ export function DtChamadosHospital() {
     }
   };
 
-  const columns: ColumnDef<Chamado>[] = [
+  const columns: ColumnDef<Paciente>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -116,20 +114,34 @@ export function DtChamadosHospital() {
       enableHiding: false,
     },
     {
-      accessorKey: 'descricao',
-      header: 'Descrição',
+      accessorKey: 'nome',
+      header: 'Nome',
     },
     {
-      accessorKey: 'prioridade',
-      header: 'Prioridade',
+      accessorKey: 'email',
+      header: 'Email',
     },
     {
-      accessorKey: 'paciente.nome',
-      header: 'Paciente',
+      accessorKey: 'dataNascimento',
+      header: 'Data de Nascimento',
+      cell: ({ row }) => {
+        const data = row.original.dataNascimento;
+        const [year, month, day] = data.split('T')[0].split('-');
+        const dataNascimento = `${day}/${month}/${year}`;
+
+        return dataNascimento;
+      },
     },
     {
-      accessorKey: 'leito.numero',
+      accessorKey: 'chamados',
+      header: 'Qtd. de Chamados',
+      cell: ({ row }) => row.original.qtdChamados,
+    },
+    {
+      accessorKey: 'leito',
       header: 'Leito',
+      cell: ({ row }) =>
+        row.original.leito ? `Leito ${row.original.leito}` : 'Sem Leito',
     },
     {
       id: 'actions',
@@ -138,33 +150,20 @@ export function DtChamadosHospital() {
         const chamado = row.original;
 
         return (
-          <>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Abrir menu</span>
-                  <DotsHorizontalIcon className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => handleDelete(chamado.id)}>
-                  Concluir o chamado
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setOpenDialog(true)}>
-                  Exibir Paciente
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {openDialog && (
-              <PerfilPacienteHospital
-                id={chamado.paciente.id}
-                openDialog={openDialog}
-                onOpenChange={setOpenDialog}
-              />
-            )}
-          </>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Abrir menu</span>
+                <DotsHorizontalIcon className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Ações</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => handleDelete(chamado.id)}>
+                Concluir o chamado
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       },
     },

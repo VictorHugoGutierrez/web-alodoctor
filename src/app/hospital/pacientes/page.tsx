@@ -5,6 +5,7 @@ import { api } from '@/lib/axios';
 import { useEffect } from 'react';
 import Head from 'next/head';
 import NavbarHospital from '@/components/hospital/navbarHospital';
+import { DtPacientesHospital } from '@/components/hospital/dtPacientesHospital';
 
 export default function Home() {
   // const router = useRouter();
@@ -38,6 +39,9 @@ export default function Home() {
       </head>
       <div>
         <NavbarHospital />
+        <div className="flex m-5">
+          <DtPacientesHospital />
+        </div>
       </div>
     </>
   );

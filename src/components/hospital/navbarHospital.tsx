@@ -44,6 +44,13 @@ export default function NavbarHospital() {
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                <Link href="/hospital/leitos" legacyBehavior passHref>
+                  Leitos
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
               <ModeToggle />
             </NavigationMenuItem>
           </NavigationMenuList>
@@ -77,6 +84,11 @@ export default function NavbarHospital() {
                     <SheetTitle>
                       <Link href="/hospital/pacientes" legacyBehavior passHref>
                         Pacientes
+                      </Link>
+                    </SheetTitle>
+                    <SheetTitle>
+                      <Link href="/hospital/leitos" legacyBehavior passHref>
+                        Leitos
                       </Link>
                     </SheetTitle>
                     <SheetTitle className="my-2">

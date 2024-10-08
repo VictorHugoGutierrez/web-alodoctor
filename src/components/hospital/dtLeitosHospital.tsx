@@ -36,63 +36,40 @@ import {
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/axios';
 import { sonnerMessage } from '@/lib/sonnerMessage';
-import PerfilPacienteHospital from './perfilPacienteHospital';
-import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
+import AssociaPacienteLeito from './associarPacienteLeito';
+import DesassociaPacienteLeito from './desassociaPacienteLeito';
 
-export type Chamado = {
+export type Leito = {
   id: number;
-  descricao: string;
-  prioridade: string;
-  paciente: {
-    id: number;
-    nome: string;
-  };
-  leito: {
-    numero: string;
-  };
+  numero: string;
+  Patiente?: { nome: string } | null;
 };
 
-export function DtChamadosHospital() {
-  const [data, setData] = useState<Chamado[]>([]);
+export function DtLeitosHospital() {
+  const [data, setData] = useState<Leito[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openDialogAssocia, setOpenDialogAssocia] = useState(false);
+  const [openDialogDesassocia, setOpenDialogDesassocia] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await api.get(`/chamados`);
-        setData(response.data.chamados);
+        const response = await api.get(`/leitos`);
+        setData(response.data.leitos);
       } catch (error) {
-        console.error('Erro ao buscar os chamados:', error);
+        console.error('Erro ao buscar os pacientes:', error);
       }
     };
 
-    fetchData();
-  }, []);
-
-  const handleDelete = async (id: number) => {
-    try {
-      const response = await api.delete(`/chamados/${id}`);
-      if (response.status === 200) {
-        sonnerMessage('Chamado', 'Chamado concluído.', 'success');
-        setData((prevData) => prevData.filter((c) => c.id !== id));
-      } else {
-        sonnerMessage('Chamado', 'Erro ao concluir o chamado.', 'error');
-      }
-    } catch (error) {
-      console.error('Erro ao concluir o chamado:', error);
-      sonnerMessage(
-        'Chamado',
-        'Erro ao concluir o chamado. Por favor, tente novamente.',
-        'error'
-      );
+    if (!openDialogAssocia && !openDialogDesassocia) {
+      fetchData();
     }
-  };
+  }, [openDialogAssocia, openDialogDesassocia]);
 
-  const columns: ColumnDef<Chamado>[] = [
+  const columns: ColumnDef<Leito>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -116,26 +93,44 @@ export function DtChamadosHospital() {
       enableHiding: false,
     },
     {
-      accessorKey: 'descricao',
-      header: 'Descrição',
+      accessorKey: 'numero',
+      header: 'Numero do Leito',
     },
     {
-      accessorKey: 'prioridade',
-      header: 'Prioridade',
+      accessorKey: 'Patiente.nome',
+      header: 'Nome Paciente',
+      cell: ({ row }) =>
+        row.original.Patiente?.nome
+          ? row.original.Patiente.nome
+          : 'Sem paciente',
     },
     {
-      accessorKey: 'paciente.nome',
-      header: 'Paciente',
-    },
-    {
-      accessorKey: 'leito.numero',
-      header: 'Leito',
+      id: 'situacao',
+      header: 'Situação',
+      cell: ({ row }) => (row.original.Patiente ? 'Ocupado' : 'Disponível'),
+      enableSorting: false,
     },
     {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        const chamado = row.original;
+        const leito = row.original;
+
+        const handleOpenDialogAssocia = () => {
+          if (leito.Patiente) {
+            sonnerMessage('Erro', 'Este leito já está ocupado.', 'error');
+          } else {
+            setOpenDialogAssocia(true);
+          }
+        };
+
+        const handleOpenDialogDesassocia = () => {
+          if (!leito.Patiente) {
+            sonnerMessage('Erro', 'Este leito já está desocupado.', 'error');
+          } else {
+            setOpenDialogDesassocia(true);
+          }
+        };
 
         return (
           <>
@@ -148,20 +143,28 @@ export function DtChamadosHospital() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => handleDelete(chamado.id)}>
-                  Concluir o chamado
+                <DropdownMenuItem onClick={() => handleOpenDialogAssocia()}>
+                  Associar paciente
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setOpenDialog(true)}>
-                  Exibir Paciente
+                <DropdownMenuItem onClick={() => handleOpenDialogDesassocia()}>
+                  Desassociar paciente
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {openDialog && (
-              <PerfilPacienteHospital
-                id={chamado.paciente.id}
-                openDialog={openDialog}
-                onOpenChange={setOpenDialog}
+            {openDialogAssocia && (
+              <AssociaPacienteLeito
+                openDialog={openDialogAssocia}
+                onOpenChange={setOpenDialogAssocia}
+                leitoId={leito.id}
+              />
+            )}
+
+            {openDialogDesassocia && (
+              <DesassociaPacienteLeito
+                openDialog={openDialogDesassocia}
+                onOpenChange={setOpenDialogDesassocia}
+                leitoId={leito.id}
               />
             )}
           </>
@@ -193,12 +196,10 @@ export function DtChamadosHospital() {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filtrar descrições..."
-          value={
-            (table.getColumn('descricao')?.getFilterValue() as string) ?? ''
-          }
+          placeholder="Filtrar número..."
+          value={(table.getColumn('numero')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('descricao')?.setFilterValue(event.target.value)
+            table.getColumn('numero')?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
