@@ -1,22 +1,23 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import Link from 'next/link';
+import * as React from "react";
+import Link from "next/link";
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
   navigationMenuTriggerStyle,
-} from '@/components/ui/navigation-menu';
+} from "@/components/ui/navigation-menu";
 import {
   Sheet,
   SheetContent,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
-import ModeToggle from '../themeButton';
-import { Menu } from 'lucide-react';
+} from "@/components/ui/sheet";
+import ModeToggle from "../themeButton";
+import { Menu } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 
 export default function NavbarHospital() {
   return (
@@ -24,7 +25,11 @@ export default function NavbarHospital() {
       <div className="hidden lg:block">
         <NavigationMenu className="ml-5 mt-5 w-screen">
           <NavigationMenuList>
-            <NavigationMenuItem className="text-xl font-bold">
+            <NavigationMenuItem className="text-xl font-bold flex items-center">
+              <Avatar className="w-20 h-10 ml-auto items-end">
+                <AvatarImage src="/alodoctor-logo.svg" />
+                <AvatarFallback>Logo</AvatarFallback>
+              </Avatar>
               <Link href="/hospital" legacyBehavior passHref>
                 Alô Doctor
               </Link>
@@ -66,7 +71,11 @@ export default function NavbarHospital() {
       <div className="block lg:hidden">
         <NavigationMenu className="mt-5">
           <NavigationMenuList className="justify-between w-screen">
-            <NavigationMenuItem className="text-xl font-bold mx-4">
+            <NavigationMenuItem className="text-xl font-bold mx-4 flex items-center">
+              <Avatar className="w-20 h-10 ml-auto items-end">
+                <AvatarImage src="/alodoctor-logo.svg" />
+                <AvatarFallback>Logo</AvatarFallback>
+              </Avatar>
               <Link href="/hospital" legacyBehavior passHref>
                 AloDoctor
               </Link>

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import ModeToggle from '@/components/themeButton';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import ModeToggle from "@/components/themeButton";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,28 +10,29 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useRouter } from 'next/navigation';
-import { api } from '../lib/axios';
-import Cookies from 'js-cookie';
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
+import { api } from "../lib/axios";
+import Cookies from "js-cookie";
 
 export default function Home() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const router = useRouter();
 
   const handleSubmit = async () => {
-    const response = await api.post('/pacientes/login', {
+    const response = await api.post("/pacientes/login", {
       email: email,
       senha: password,
     });
 
-    Cookies.set('authTokenPaciente', response.data.token, { expires: 30 });
+    Cookies.set("authTokenPaciente", response.data.token, { expires: 30 });
 
-    router.push('/pacientes');
+    router.push("/pacientes");
   };
 
   return (
@@ -43,12 +44,18 @@ export default function Home() {
         </TabsList>
         <TabsContent value="paciente">
           <Card>
-            <CardHeader>
-              <CardTitle>Bem vindo ao Alô Doctor!</CardTitle>
-              <CardDescription>
-                Se você for paciente entre por aqui.
-              </CardDescription>
-            </CardHeader>
+            <div className="flex items-center">
+              <CardHeader>
+                <CardTitle>Bem vindo ao Alô Doctor!</CardTitle>
+                <CardDescription>
+                  Se você for paciente entre por aqui.
+                </CardDescription>
+              </CardHeader>
+              <Avatar className="w-40 h-20 ml-auto items-end">
+                <AvatarImage src="/alodoctor-logo.svg" />
+                <AvatarFallback>Logo</AvatarFallback>
+              </Avatar>
+            </div>
             <CardContent className="space-y-2">
               <div className="space-y-1">
                 <Label htmlFor="email">Email</Label>
@@ -79,12 +86,18 @@ export default function Home() {
         </TabsContent>
         <TabsContent value="hospital">
           <Card>
-            <CardHeader>
-              <CardTitle>Hospital</CardTitle>
-              <CardDescription>
-                Digite as informações corretamente.
-              </CardDescription>
-            </CardHeader>
+            <div className="flex items-center">
+              <CardHeader>
+                <CardTitle>Hospital</CardTitle>
+                <CardDescription>
+                  Digite as informações corretamente.
+                </CardDescription>
+              </CardHeader>
+              <Avatar className="w-40 h-20 ml-auto items-end">
+                <AvatarImage src="/alodoctor-logo.svg" />
+                <AvatarFallback>Logo</AvatarFallback>
+              </Avatar>
+            </div>
             <CardContent className="space-y-2">
               <div className="space-y-1">
                 <Label htmlFor="user">Usuário</Label>

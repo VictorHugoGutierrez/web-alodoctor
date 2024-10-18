@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import Link from 'next/link';
+import * as React from "react";
+import Link from "next/link";
 
 import {
   NavigationMenu,
@@ -9,17 +9,18 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   navigationMenuTriggerStyle,
-} from '@/components/ui/navigation-menu';
+} from "@/components/ui/navigation-menu";
 import {
   Sheet,
   SheetContent,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
-import Perfil from '@/components/paciente/perfilPacientes';
-import ModeToggle from '../themeButton';
-import { Menu } from 'lucide-react';
-import Chamados from '@/components/paciente/chamados';
+} from "@/components/ui/sheet";
+import Perfil from "@/components/paciente/perfilPacientes";
+import ModeToggle from "../themeButton";
+import { Menu } from "lucide-react";
+import Chamados from "@/components/paciente/chamados";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function NavbarPacientes() {
   return (
@@ -27,7 +28,11 @@ export default function NavbarPacientes() {
       <div className="hidden lg:block">
         <NavigationMenu className="ml-5 mt-5 w-screen">
           <NavigationMenuList>
-            <NavigationMenuItem className="text-xl font-bold">
+            <NavigationMenuItem className="text-xl font-bold items-center flex">
+              <Avatar className="w-20 h-10 ml-auto items-end">
+                <AvatarImage src="/alodoctor-logo.svg" />
+                <AvatarFallback>Logo</AvatarFallback>
+              </Avatar>
               <Link href="/pacientes" legacyBehavior passHref>
                 Alô Doctor
               </Link>
@@ -51,7 +56,11 @@ export default function NavbarPacientes() {
       <div className="block lg:hidden">
         <NavigationMenu className="mt-5">
           <NavigationMenuList className="justify-between w-screen">
-            <NavigationMenuItem className="text-xl font-bold mx-4">
+            <NavigationMenuItem className="text-xl font-bold mx-4 items-center flex">
+              <Avatar className="w-20 h-10 ml-auto items-end">
+                <AvatarImage src="/alodoctor-logo.svg" />
+                <AvatarFallback>Logo</AvatarFallback>
+              </Avatar>
               <Link href="/pacientes" legacyBehavior passHref>
                 AloDoctor
               </Link>
