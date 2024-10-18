@@ -1,10 +1,11 @@
 'use client';
 
 import {
-  CaretSortIcon,
   ChevronDownIcon,
   DotsHorizontalIcon,
+  PlusIcon,
 } from '@radix-ui/react-icons';
+
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -41,6 +42,7 @@ import { useState, useEffect } from 'react';
 import { api } from '@/lib/axios';
 import { sonnerMessage } from '@/lib/sonnerMessage';
 import { Chamado } from './dtChamadosHospital';
+import PerfilPacienteHospital from './perfilPacienteHospital';
 
 export type Paciente = {
   id: number;
@@ -57,6 +59,8 @@ export function DtPacientesHospital() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openDialogEditar, setOpenDialogEditar] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,18 +77,18 @@ export function DtPacientesHospital() {
 
   const handleDelete = async (id: number) => {
     try {
-      const response = await api.delete(`/chamados/${id}`);
+      const response = await api.delete(`/pacientes/${id}`);
       if (response.status === 200) {
-        sonnerMessage('Chamado', 'Chamado concluído.', 'success');
+        sonnerMessage('Paciente', 'Paciente excluído.', 'success');
         setData((prevData) => prevData.filter((c) => c.id !== id));
       } else {
-        sonnerMessage('Chamado', 'Erro ao concluir o chamado.', 'error');
+        sonnerMessage('Paciente', 'Erro ao excluir o paciente.', 'error');
       }
     } catch (error) {
-      console.error('Erro ao concluir o chamado:', error);
+      console.error('Erro ao excluir o paciente:', error);
       sonnerMessage(
-        'Chamado',
-        'Erro ao concluir o chamado. Por favor, tente novamente.',
+        'Paciente',
+        'Erro ao excluir o paciente. Por favor, tente novamente.',
         'error'
       );
     }
@@ -147,23 +151,38 @@ export function DtPacientesHospital() {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        const chamado = row.original;
+        const paciente = row.original;
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Abrir menu</span>
-                <DotsHorizontalIcon className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Ações</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => handleDelete(chamado.id)}>
-                Concluir o chamado
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Abrir menu</span>
+                  <DotsHorizontalIcon className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => handleDelete(paciente.id)}>
+                  Excluir
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setOpenDialogEditar(true)}>
+                  Editar
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {openDialogEditar && (
+              <PerfilPacienteHospital
+                id={paciente.id}
+                openDialog={openDialogEditar}
+                onOpenChange={setOpenDialogEditar}
+                edita={true}
+                readOnly={false}
+              />
+            )}
+          </>
         );
       },
     },
@@ -201,6 +220,21 @@ export function DtPacientesHospital() {
           }
           className="max-w-sm"
         />
+        <Button
+          variant="outline"
+          className="mx-4"
+          onClick={() => setOpenDialog(true)}
+        >
+          Criar <PlusIcon className="ml-2 h-4 w-4" />
+        </Button>
+        {openDialog && (
+          <PerfilPacienteHospital
+            openDialog={openDialog}
+            onOpenChange={setOpenDialog}
+            edita={true}
+            readOnly={false}
+          />
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

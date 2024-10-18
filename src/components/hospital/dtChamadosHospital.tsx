@@ -37,7 +37,6 @@ import { useState, useEffect } from 'react';
 import { api } from '@/lib/axios';
 import { sonnerMessage } from '@/lib/sonnerMessage';
 import PerfilPacienteHospital from './perfilPacienteHospital';
-import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
 
 export type Chamado = {
   id: number;
