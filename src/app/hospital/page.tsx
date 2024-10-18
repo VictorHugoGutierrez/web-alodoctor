@@ -5,6 +5,7 @@ import { api } from '@/lib/axios';
 import { useEffect } from 'react';
 import Head from 'next/head';
 import NavbarHospital from '../../components/hospital/navbarHospital';
+import LandingPage from '@/components/hospital/landingPage';
 
 export default function Home() {
   // const router = useRouter();
@@ -32,10 +33,12 @@ export default function Home() {
   // }, [router]);
 
   return (
-    <>
-      <div>
-        <NavbarHospital />
-      </div>
-    </>
+    <div>
+      <NavbarHospital />
+      <LandingPage
+        textTitle="Bem vindo ao Alô Doctor!"
+        textSubTitle="Sistema Integrado de Comunicação Hospitalar"
+      />
+    </div>
   );
 }

@@ -63,17 +63,17 @@ export function DtPacientesHospital() {
   const [openDialogEditar, setOpenDialogEditar] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.get(`/pacientes`);
-        setData(response.data.pacientes);
-      } catch (error) {
-        console.error('Erro ao buscar os pacientes:', error);
-      }
-    };
-
     fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await api.get(`/pacientes`);
+      setData(response.data.pacientes);
+    } catch (error) {
+      console.error('Erro ao buscar os pacientes:', error);
+    }
+  };
 
   const handleDelete = async (id: number) => {
     try {
@@ -177,7 +177,12 @@ export function DtPacientesHospital() {
               <PerfilPacienteHospital
                 id={paciente.id}
                 openDialog={openDialogEditar}
-                onOpenChange={setOpenDialogEditar}
+                onOpenChange={(open) => {
+                  setOpenDialogEditar(open);
+                  if (!open) {
+                    fetchData();
+                  }
+                }}
                 edita={true}
                 readOnly={false}
               />
@@ -230,7 +235,12 @@ export function DtPacientesHospital() {
         {openDialog && (
           <PerfilPacienteHospital
             openDialog={openDialog}
-            onOpenChange={setOpenDialog}
+            onOpenChange={(open) => {
+              setOpenDialog(open);
+              if (!open) {
+                fetchData();
+              }
+            }}
             edita={true}
             readOnly={false}
           />
