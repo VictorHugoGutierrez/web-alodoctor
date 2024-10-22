@@ -1,5 +1,5 @@
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: process.env.BASE_URL || 'http://localhost:1111',
+  baseURL: process.env.BASE_URL || 'https://api-alodoctor.vercel.app/',
 });
