@@ -1,6 +1,10 @@
 'use client';
 
-import { ChevronDownIcon, DotsHorizontalIcon } from '@radix-ui/react-icons';
+import {
+  ChevronDownIcon,
+  DotsHorizontalIcon,
+  PlusIcon,
+} from '@radix-ui/react-icons';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -38,11 +42,12 @@ import { api } from '@/lib/axios';
 import { sonnerMessage } from '@/lib/sonnerMessage';
 import AssociaPacienteLeito from './associarPacienteLeito';
 import DesassociaPacienteLeito from './desassociaPacienteLeito';
+import LeitoHospital from './leitoHospital';
 
 export type Leito = {
   id: number;
   numero: string;
-  Patiente?: { nome: string } | null;
+  Paciente?: { nome: string } | null;
 };
 
 export function DtLeitosHospital() {
@@ -53,21 +58,24 @@ export function DtLeitosHospital() {
   const [rowSelection, setRowSelection] = useState({});
   const [openDialogAssocia, setOpenDialogAssocia] = useState(false);
   const [openDialogDesassocia, setOpenDialogDesassocia] = useState(false);
+  const [openDialogEditar, setOpenDialogEditar] = useState(false);
+  const [openDialogCriar, setOpenDialogCriar] = useState(false);
+  const [selectedLeitoId, setselectedLeitoId] = useState<number>();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.get(`/leitos`);
-        setData(response.data.leitos);
-      } catch (error) {
-        console.error('Erro ao buscar os pacientes:', error);
-      }
-    };
-
     if (!openDialogAssocia && !openDialogDesassocia) {
       fetchData();
     }
   }, [openDialogAssocia, openDialogDesassocia]);
+
+  const fetchData = async () => {
+    try {
+      const response = await api.get(`/leitos`);
+      setData(response.data.leitos);
+    } catch (error) {
+      console.error('Erro ao buscar os leitos:', error);
+    }
+  };
 
   const columns: ColumnDef<Leito>[] = [
     {
@@ -97,17 +105,17 @@ export function DtLeitosHospital() {
       header: 'Numero do Leito',
     },
     {
-      accessorKey: 'Patiente.nome',
+      accessorKey: 'Paciente.nome',
       header: 'Nome Paciente',
       cell: ({ row }) =>
-        row.original.Patiente?.nome
-          ? row.original.Patiente.nome
+        row.original.Paciente?.nome
+          ? row.original.Paciente.nome
           : 'Sem paciente',
     },
     {
       id: 'situacao',
       header: 'Situação',
-      cell: ({ row }) => (row.original.Patiente ? 'Ocupado' : 'Disponível'),
+      cell: ({ row }) => (row.original.Paciente ? 'Ocupado' : 'Disponível'),
       enableSorting: false,
     },
     {
@@ -117,18 +125,45 @@ export function DtLeitosHospital() {
         const leito = row.original;
 
         const handleOpenDialogAssocia = () => {
-          if (leito.Patiente) {
+          if (leito.Paciente) {
             sonnerMessage('Erro', 'Este leito já está ocupado.', 'error');
           } else {
             setOpenDialogAssocia(true);
+            setselectedLeitoId(leito.id);
           }
         };
 
         const handleOpenDialogDesassocia = () => {
-          if (!leito.Patiente) {
+          if (!leito.Paciente) {
             sonnerMessage('Erro', 'Este leito já está desocupado.', 'error');
           } else {
             setOpenDialogDesassocia(true);
+            setselectedLeitoId(leito.id);
+          }
+        };
+
+        const handleOpenDialogEditar = () => {
+          setOpenDialogEditar(true);
+          setselectedLeitoId(leito.id);
+        };
+
+        const handleDelete = async (id: number) => {
+          try {
+            console.log(id);
+            const response = await api.delete(`/leitos/${id}`);
+            if (response.status === 200) {
+              sonnerMessage('Leito', 'Leito excluído.', 'success');
+              setData((prevData) => prevData.filter((c) => c.id !== id));
+            } else {
+              sonnerMessage('Leito', 'Erro ao excluir o leito.', 'error');
+            }
+          } catch (error) {
+            console.error('Erro ao excluir o leito:', error);
+            sonnerMessage(
+              'Leito',
+              'Erro ao excluir o leito. Por favor, tente novamente.',
+              'error'
+            );
           }
         };
 
@@ -149,6 +184,12 @@ export function DtLeitosHospital() {
                 <DropdownMenuItem onClick={() => handleOpenDialogDesassocia()}>
                   Desassociar paciente
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleOpenDialogEditar()}>
+                  Editar
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleDelete(leito.id)}>
+                  Excluir
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -156,7 +197,7 @@ export function DtLeitosHospital() {
               <AssociaPacienteLeito
                 openDialog={openDialogAssocia}
                 onOpenChange={setOpenDialogAssocia}
-                leitoId={leito.id}
+                leitoId={selectedLeitoId}
               />
             )}
 
@@ -164,7 +205,20 @@ export function DtLeitosHospital() {
               <DesassociaPacienteLeito
                 openDialog={openDialogDesassocia}
                 onOpenChange={setOpenDialogDesassocia}
-                leitoId={leito.id}
+                leitoId={selectedLeitoId}
+              />
+            )}
+
+            {openDialogEditar && (
+              <LeitoHospital
+                id={selectedLeitoId}
+                openDialog={openDialogEditar}
+                onOpenChange={(open) => {
+                  setOpenDialogEditar(open);
+                  if (!open) {
+                    fetchData();
+                  }
+                }}
               />
             )}
           </>
@@ -203,6 +257,24 @@ export function DtLeitosHospital() {
           }
           className="max-w-sm"
         />
+        <Button
+          variant="outline"
+          className="mx-4"
+          onClick={() => setOpenDialogCriar(true)}
+        >
+          Criar <PlusIcon className="ml-2 h-4 w-4" />
+        </Button>
+        {openDialogCriar && (
+          <LeitoHospital
+            openDialog={openDialogCriar}
+            onOpenChange={(open) => {
+              setOpenDialogCriar(open);
+              if (!open) {
+                fetchData();
+              }
+            }}
+          />
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

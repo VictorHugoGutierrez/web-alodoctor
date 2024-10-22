@@ -29,8 +29,10 @@ export default function Perfil() {
     const fetchData = async () => {
       try {
         const token = document.cookie.split('authTokenPaciente=')[1] || '';
-        const response = await api.post('/token/paciente', { token });
-        const { paciente } = response.data;
+        if (token) {
+          const response = await api.post('/token/paciente', { token });
+          const { paciente } = response.data;
+        }
         setPaciente(paciente);
       } catch (error) {
         console.error('Erro ao verificar o estado do leito:', error);

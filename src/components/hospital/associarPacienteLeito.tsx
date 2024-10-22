@@ -23,7 +23,7 @@ import { Paciente } from './dtPacientesHospital';
 interface AssociaPacienteLeitoProps {
   openDialog: boolean;
   onOpenChange: (value: boolean) => void;
-  leitoId: number;
+  leitoId?: number;
 }
 
 export default function AssociaPacienteLeito({

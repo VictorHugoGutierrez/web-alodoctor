@@ -61,6 +61,9 @@ export function DtPacientesHospital() {
   const [rowSelection, setRowSelection] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
   const [openDialogEditar, setOpenDialogEditar] = useState(false);
+  const [selectedPacienteId, setSelectedPacienteId] = useState<
+    number | undefined
+  >();
 
   useEffect(() => {
     fetchData();
@@ -167,25 +170,32 @@ export function DtPacientesHospital() {
                 <DropdownMenuItem onClick={() => handleDelete(paciente.id)}>
                   Excluir
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setOpenDialogEditar(true)}>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setOpenDialogEditar(true);
+                    setSelectedPacienteId(paciente.id);
+                  }}
+                >
                   Editar
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
             {openDialogEditar && (
-              <PerfilPacienteHospital
-                id={paciente.id}
-                openDialog={openDialogEditar}
-                onOpenChange={(open) => {
-                  setOpenDialogEditar(open);
-                  if (!open) {
-                    fetchData();
-                  }
-                }}
-                edita={true}
-                readOnly={false}
-              />
+              <>
+                <PerfilPacienteHospital
+                  id={selectedPacienteId}
+                  openDialog={openDialogEditar}
+                  onOpenChange={(open) => {
+                    setOpenDialogEditar(open);
+                    if (!open) {
+                      fetchData();
+                    }
+                  }}
+                  edita={true}
+                  readOnly={false}
+                />
+              </>
             )}
           </>
         );
@@ -216,12 +226,10 @@ export function DtPacientesHospital() {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filtrar descrições..."
-          value={
-            (table.getColumn('descricao')?.getFilterValue() as string) ?? ''
-          }
+          placeholder="Filtrar nome..."
+          value={(table.getColumn('nome')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('descricao')?.setFilterValue(event.target.value)
+            table.getColumn('nome')?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />

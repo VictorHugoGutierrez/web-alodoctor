@@ -62,7 +62,7 @@ export default function LandingPage(props: WelcomeProps) {
           >
             {currentTitle}
           </h1>
-          <p className="text-xl lg:text-2xl">{currentSubTitle}</p>
+          <p className="text-base lg:text-2xl">{currentSubTitle}</p>
         </div>
       </div>
     </div>

@@ -1,23 +1,22 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import Link from "next/link";
+import * as React from 'react';
+import Link from 'next/link';
 import {
   NavigationMenu,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
   navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
+} from '@/components/ui/navigation-menu';
 import {
   Sheet,
   SheetContent,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import ModeToggle from "../themeButton";
-import { Menu } from "lucide-react";
-import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
+} from '@/components/ui/sheet';
+import ModeToggle from '../themeButton';
+import { Menu } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 
 export default function NavbarHospital() {
   return (
@@ -31,36 +30,28 @@ export default function NavbarHospital() {
                 <AvatarFallback>Logo</AvatarFallback>
               </Avatar>
               <Link href="/hospital" legacyBehavior passHref>
-                Alô Doctor
+                <a>Alô Doctor</a>
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                <Link href="/hospital/chamados" legacyBehavior passHref>
-                  Chamados
-                </Link>
-              </NavigationMenuLink>
+              <Link href="/hospital/chamados" legacyBehavior passHref>
+                <a className={navigationMenuTriggerStyle()}>Chamados</a>
+              </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                <Link href="/hospital/pacientes" legacyBehavior passHref>
-                  Pacientes
-                </Link>
-              </NavigationMenuLink>
+              <Link href="/hospital/pacientes" legacyBehavior passHref>
+                <a className={navigationMenuTriggerStyle()}>Pacientes</a>
+              </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                <Link href="/hospital/leitos" legacyBehavior passHref>
-                  Leitos
-                </Link>
-              </NavigationMenuLink>
+              <Link href="/hospital/leitos" legacyBehavior passHref>
+                <a className={navigationMenuTriggerStyle()}>Leitos</a>
+              </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                <Link href="/hospital/painel" legacyBehavior passHref>
-                  Painel
-                </Link>
-              </NavigationMenuLink>
+              <Link href="/hospital/painel" legacyBehavior passHref>
+                <a className={navigationMenuTriggerStyle()}>Painel</a>
+              </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <ModeToggle />
@@ -77,47 +68,45 @@ export default function NavbarHospital() {
                 <AvatarFallback>Logo</AvatarFallback>
               </Avatar>
               <Link href="/hospital" legacyBehavior passHref>
-                AloDoctor
+                <a>AloDoctor</a>
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                <Sheet>
-                  <SheetTrigger>
-                    <Menu />
-                  </SheetTrigger>
-                  <SheetContent>
-                    <SheetTitle>
-                      <Link href="/hospital" legacyBehavior passHref>
-                        Home
-                      </Link>
-                    </SheetTitle>
-                    <SheetTitle>
-                      <Link href="/hospital/chamados" legacyBehavior passHref>
-                        Chamados
-                      </Link>
-                    </SheetTitle>
-                    <SheetTitle>
-                      <Link href="/hospital/pacientes" legacyBehavior passHref>
-                        Pacientes
-                      </Link>
-                    </SheetTitle>
-                    <SheetTitle>
-                      <Link href="/hospital/leitos" legacyBehavior passHref>
-                        Leitos
-                      </Link>
-                    </SheetTitle>
-                    <SheetTitle>
-                      <Link href="/hospital/painel" legacyBehavior passHref>
-                        Painel
-                      </Link>
-                    </SheetTitle>
-                    <SheetTitle className="my-2">
-                      <ModeToggle />
-                    </SheetTitle>
-                  </SheetContent>
-                </Sheet>
-              </NavigationMenuLink>
+              <Sheet>
+                <SheetTrigger>
+                  <Menu />
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetTitle>
+                    <Link href="/hospital" legacyBehavior passHref>
+                      <a>Home</a>
+                    </Link>
+                  </SheetTitle>
+                  <SheetTitle>
+                    <Link href="/hospital/chamados" legacyBehavior passHref>
+                      <a>Chamados</a>
+                    </Link>
+                  </SheetTitle>
+                  <SheetTitle>
+                    <Link href="/hospital/pacientes" legacyBehavior passHref>
+                      <a>Pacientes</a>
+                    </Link>
+                  </SheetTitle>
+                  <SheetTitle>
+                    <Link href="/hospital/leitos" legacyBehavior passHref>
+                      <a>Leitos</a>
+                    </Link>
+                  </SheetTitle>
+                  <SheetTitle>
+                    <Link href="/hospital/painel" legacyBehavior passHref>
+                      <a>Painel</a>
+                    </Link>
+                  </SheetTitle>
+                  <SheetTitle className="my-2">
+                    <ModeToggle />
+                  </SheetTitle>
+                </SheetContent>
+              </Sheet>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>

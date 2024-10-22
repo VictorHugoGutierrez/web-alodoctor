@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import ModeToggle from "@/components/themeButton";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import ModeToggle from '@/components/themeButton';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -10,29 +10,42 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { useRouter } from "next/navigation";
-import { api } from "../lib/axios";
-import Cookies from "js-cookie";
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { useRouter } from 'next/navigation';
+import { api } from '../lib/axios';
+import Cookies from 'js-cookie';
 
 export default function Home() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [hospitalPassword, setHospitalPassword] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async () => {
-    const response = await api.post("/pacientes/login", {
+  const handleSubmitPaciente = async () => {
+    const response = await api.post('/pacientes/login', {
       email: email,
       senha: password,
     });
 
-    Cookies.set("authTokenPaciente", response.data.token, { expires: 30 });
+    Cookies.set('authTokenPaciente', response.data.token, { expires: 30 });
 
-    router.push("/pacientes");
+    router.push('/pacientes');
+  };
+
+  const handleSubmitHospital = async () => {
+    const response = await api.post('/usuarios/login', {
+      username: username,
+      password: hospitalPassword,
+    });
+
+    Cookies.set('authTokenHospital', response.data.token, { expires: 30 });
+
+    router.push('/hospital');
   };
 
   return (
@@ -79,7 +92,7 @@ export default function Home() {
               </div>
             </CardContent>
             <CardFooter className="gap-2">
-              <Button onClick={handleSubmit}>Entrar</Button>
+              <Button onClick={handleSubmitPaciente}>Entrar</Button>
               <ModeToggle />
             </CardFooter>
           </Card>
@@ -101,15 +114,27 @@ export default function Home() {
             <CardContent className="space-y-2">
               <div className="space-y-1">
                 <Label htmlFor="user">Usuário</Label>
-                <Input id="user" type="text" />
+                <Input
+                  id="user"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
               </div>
               <div className="space-y-1">
-                <Label htmlFor="new">Senha</Label>
-                <Input id="password" type="password" />
+                <Label htmlFor="hospital-password">Senha</Label>
+                <Input
+                  id="hospital-password"
+                  type="password"
+                  value={hospitalPassword}
+                  onChange={(e) => setHospitalPassword(e.target.value)}
+                  required
+                />
               </div>
             </CardContent>
             <CardFooter className="gap-2">
-              <Button>Entrar</Button>
+              <Button onClick={handleSubmitHospital}>Entrar</Button>
               <ModeToggle />
             </CardFooter>
           </Card>
