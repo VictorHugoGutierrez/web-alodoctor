@@ -6,6 +6,9 @@ import { CircleAlert } from 'lucide-react';
 export default function Home() {
   return (
     <>
+      <head>
+        <title>Pacientes | Espera</title>
+      </head>
       <div className="w-screen h-screen flex items-center justify-center">
         <div className="md:w-1/2 mx-2">
           <Alert>

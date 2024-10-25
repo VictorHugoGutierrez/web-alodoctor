@@ -30,7 +30,7 @@ export default function NavbarHospital() {
                 <AvatarFallback>Logo</AvatarFallback>
               </Avatar>
               <Link href="/hospital" legacyBehavior passHref>
-                <a>Alô Doctor</a>
+                Alô Doctor
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
@@ -68,7 +68,7 @@ export default function NavbarHospital() {
                 <AvatarFallback>Logo</AvatarFallback>
               </Avatar>
               <Link href="/hospital" legacyBehavior passHref>
-                <a>AloDoctor</a>
+                Alô Doctor
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
@@ -79,27 +79,27 @@ export default function NavbarHospital() {
                 <SheetContent>
                   <SheetTitle>
                     <Link href="/hospital" legacyBehavior passHref>
-                      <a>Home</a>
+                      Home
                     </Link>
                   </SheetTitle>
                   <SheetTitle>
                     <Link href="/hospital/chamados" legacyBehavior passHref>
-                      <a>Chamados</a>
+                      Chamados
                     </Link>
                   </SheetTitle>
                   <SheetTitle>
                     <Link href="/hospital/pacientes" legacyBehavior passHref>
-                      <a>Pacientes</a>
+                      Pacientes
                     </Link>
                   </SheetTitle>
                   <SheetTitle>
                     <Link href="/hospital/leitos" legacyBehavior passHref>
-                      <a>Leitos</a>
+                      Leitos
                     </Link>
                   </SheetTitle>
                   <SheetTitle>
                     <Link href="/hospital/painel" legacyBehavior passHref>
-                      <a>Painel</a>
+                      Painel
                     </Link>
                   </SheetTitle>
                   <SheetTitle className="my-2">

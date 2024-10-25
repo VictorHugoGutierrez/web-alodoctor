@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import Link from "next/link";
+import * as React from 'react';
+import Link from 'next/link';
 
 import {
   NavigationMenu,
@@ -9,18 +9,18 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
+} from '@/components/ui/navigation-menu';
 import {
   Sheet,
   SheetContent,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import Perfil from "@/components/paciente/perfilPacientes";
-import ModeToggle from "../themeButton";
-import { Menu } from "lucide-react";
-import Chamados from "@/components/paciente/chamados";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+} from '@/components/ui/sheet';
+import Perfil from '@/components/paciente/perfilPacientes';
+import ModeToggle from '../themeButton';
+import { Menu } from 'lucide-react';
+import Chamados from '@/components/paciente/chamados';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 export default function NavbarPacientes() {
   return (
@@ -62,7 +62,7 @@ export default function NavbarPacientes() {
                 <AvatarFallback>Logo</AvatarFallback>
               </Avatar>
               <Link href="/pacientes" legacyBehavior passHref>
-                AloDoctor
+                Alô Doctor
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>

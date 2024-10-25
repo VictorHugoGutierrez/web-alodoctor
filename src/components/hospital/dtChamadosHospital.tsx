@@ -58,6 +58,7 @@ export function DtChamadosHospital() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
+  const [selectedChamado, setSelectedChamado] = useState<number>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -150,7 +151,12 @@ export function DtChamadosHospital() {
                 <DropdownMenuItem onClick={() => handleDelete(chamado.id)}>
                   Concluir o chamado
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setOpenDialog(true)}>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setOpenDialog(true),
+                      setSelectedChamado(chamado.paciente.id);
+                  }}
+                >
                   Exibir Paciente
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -158,7 +164,7 @@ export function DtChamadosHospital() {
 
             {openDialog && (
               <PerfilPacienteHospital
-                id={chamado.paciente.id}
+                id={selectedChamado}
                 openDialog={openDialog}
                 onOpenChange={setOpenDialog}
               />

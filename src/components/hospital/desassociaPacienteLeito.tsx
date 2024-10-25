@@ -39,7 +39,6 @@ export default function DesassociaPacienteLeito({
     const fetchPacientes = async () => {
       try {
         const response = await api.get('/pacientes');
-        console.log(response.data.pacientes);
         setPacientes(response.data.pacientes);
       } catch (error) {
         console.error('Erro ao buscar pacientes:', error);

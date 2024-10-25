@@ -149,7 +149,6 @@ export function DtLeitosHospital() {
 
         const handleDelete = async (id: number) => {
           try {
-            console.log(id);
             const response = await api.delete(`/leitos/${id}`);
             if (response.status === 200) {
               sonnerMessage('Leito', 'Leito excluído.', 'success');

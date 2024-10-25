@@ -56,10 +56,7 @@ export default function LandingPage(props: WelcomeProps) {
           </Avatar>
         </div>
         <div className="text-center md:text-left">
-          <h1
-            id="typing-title"
-            className="text-3xl font-black text-white lg:text-5xl"
-          >
+          <h1 id="typing-title" className="text-3xl font-black lg:text-5xl">
             {currentTitle}
           </h1>
           <p className="text-base lg:text-2xl">{currentSubTitle}</p>

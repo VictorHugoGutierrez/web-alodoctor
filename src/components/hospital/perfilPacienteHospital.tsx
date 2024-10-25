@@ -15,7 +15,7 @@ import { Button } from '../ui/button';
 
 interface Paciente {
   nome: string;
-  Leito: { numero: string };
+  leito: string;
   email: string;
   dataNascimento: string;
   senha: string;
@@ -38,7 +38,7 @@ export default function PerfilPacienteHospital({
 }: PerfilPacienteHospitalProps) {
   const [paciente, setPaciente] = useState<Paciente>({
     nome: '',
-    Leito: { numero: '' },
+    leito: '',
     email: '',
     dataNascimento: '',
     senha: '',
@@ -51,8 +51,7 @@ export default function PerfilPacienteHospital({
         setLoading(true);
         try {
           const response = await api.get(`/pacientes/${id}`);
-          const fetchedPaciente = response.data.paciente;
-          setPaciente(fetchedPaciente);
+          setPaciente(response.data.paciente);
         } catch (error) {
           console.error('Erro ao verificar o estado do paciente:', error);
         } finally {
@@ -72,12 +71,13 @@ export default function PerfilPacienteHospital({
     setLoading(true);
     try {
       if (id) {
-        console.log(paciente.dataNascimento);
         const response = await api.put(`/pacientes/${id}`, {
           email: paciente.email,
           senha: paciente.senha,
           nome: paciente.nome,
-          dataNascimento: paciente.dataNascimento,
+          dataNascimento: new Date(paciente.dataNascimento)
+            .toISOString()
+            .split('T')[0],
         });
         console.log('Paciente atualizado com sucesso:', response.data);
       } else {
@@ -85,7 +85,9 @@ export default function PerfilPacienteHospital({
           email: paciente.email,
           senha: paciente.senha,
           nome: paciente.nome,
-          dataNascimento: paciente.dataNascimento,
+          dataNascimento: new Date(paciente.dataNascimento)
+            .toISOString()
+            .split('T')[0],
         });
         console.log('Paciente criado com sucesso:', response.data);
       }
@@ -137,7 +139,8 @@ export default function PerfilPacienteHospital({
                   <Label htmlFor="leito">Leito</Label>
                   <Input
                     id="leito"
-                    value={paciente.Leito.numero}
+                    type="text"
+                    value={paciente.leito}
                     className="col-span-3"
                     readOnly
                   />
