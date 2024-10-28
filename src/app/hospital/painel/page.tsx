@@ -9,6 +9,7 @@ export default function Home() {
 
   const enterFullScreen = async () => {
     const element = document.documentElement as HTMLElement;
+
     try {
       if (element.requestFullscreen) {
         await element.requestFullscreen();

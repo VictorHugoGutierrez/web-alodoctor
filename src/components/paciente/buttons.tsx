@@ -3,42 +3,41 @@
 import { useState } from 'react';
 import {
   faRestroom,
-  faBowlFood,
-  faSnowflake,
-  faFireFlameCurved,
+  faUtensils,
   faSyringe,
   faBottleWater,
   faUserNurse,
   faHeartPulse,
+  faCommentDots,
+  faTemperatureLow,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { api } from '@/lib/axios';
-import { Progress } from '@/components/ui/progress';
 import { sonnerMessage } from '@/lib/sonnerMessage';
 
 export default function Buttons() {
   const icons = [
     faRestroom,
-    faBowlFood,
-    faSnowflake,
-    faFireFlameCurved,
+    faUtensils,
+    faTemperatureLow,
     faSyringe,
     faBottleWater,
     faUserNurse,
     faHeartPulse,
+    faCommentDots,
   ];
 
   const iconsName = [
     'Banheiro',
     'Alimentação',
-    'Frio',
-    'Calor',
+    'Temperatura',
     'Medicação',
     'Água',
     'Enfermeira',
     'Emergência',
+    'Outros',
   ] as const;
 
   type IconName = (typeof iconsName)[number];
@@ -46,16 +45,15 @@ export default function Buttons() {
   const prioridadeMap: Record<IconName, string> = {
     Banheiro: 'Média',
     Alimentação: 'Baixa',
-    Frio: 'Baixa',
-    Calor: 'Baixa',
-    Medicação: 'Alta',
+    Temperatura: 'Baixa',
+    Medicação: 'Média',
     Água: 'Média',
     Enfermeira: 'Alta',
     Emergência: 'Alta',
+    Outros: 'Baixa',
   };
 
   const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(13);
 
   const delay = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
@@ -69,7 +67,6 @@ export default function Buttons() {
       await delay(500);
       const { paciente } = responsePaciente.data;
 
-      setProgress(25);
       await delay(500);
       const response = await api.post('/chamados', {
         descricao: name,
@@ -78,12 +75,9 @@ export default function Buttons() {
         leitoId: paciente.Leito.id,
       });
 
-      setProgress(50);
       await delay(500);
-      setProgress(75);
 
       if (response.status === 200) {
-        setProgress(100);
         sonnerMessage(
           'Chamado criado com sucesso!',
           name + ' com prioridade ' + prioridadeMap[name],
@@ -106,7 +100,6 @@ export default function Buttons() {
     } finally {
       await delay(500);
       setLoading(false);
-      setProgress(13);
     }
   };
 

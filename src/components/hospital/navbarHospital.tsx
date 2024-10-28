@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {
   NavigationMenu,
   NavigationMenuItem,
+  NavigationMenuLink,
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
@@ -15,13 +16,49 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import ModeToggle from '../themeButton';
-import { Menu } from 'lucide-react';
+import {
+  Menu,
+  ClipboardList,
+  Home,
+  UsersRound,
+  BedSingle,
+  TvMinimal,
+  LogOut,
+  MessageCircleMore,
+} from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
+import { sonnerMessage } from '@/lib/sonnerMessage';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
+import { api } from '@/lib/axios';
 
 export default function NavbarHospital() {
+  const router = useRouter();
+
+  const handleSairButton = async () => {
+    try {
+      const token = document.cookie.split('authTokenHospital=')[1] || '';
+
+      if (token) {
+        const response = await api.post('/token', { token: token });
+
+        if (response.status === 200) {
+          Cookies.remove('authTokenHospital');
+          router.push('/');
+        }
+      }
+    } catch (error) {
+      sonnerMessage(
+        'Erro',
+        'Não foi possível sair da sua seção. Tente novamente mais tarde.',
+        'error'
+      );
+    }
+  };
+
   return (
     <>
-      <div className="hidden lg:block">
+      <div className="hidden lg:flex items-center justify-between">
         <NavigationMenu className="ml-5 mt-5 w-screen">
           <NavigationMenuList>
             <NavigationMenuItem className="text-xl font-bold flex items-center">
@@ -34,27 +71,65 @@ export default function NavbarHospital() {
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link href="/hospital/chamados" legacyBehavior passHref>
-                <a className={navigationMenuTriggerStyle()}>Chamados</a>
-              </Link>
+              <NavigationMenuLink
+                className={navigationMenuTriggerStyle()}
+                href="/hospital/chamados"
+              >
+                <ClipboardList className="mr-2" />
+                Chamados
+              </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link href="/hospital/pacientes" legacyBehavior passHref>
-                <a className={navigationMenuTriggerStyle()}>Pacientes</a>
-              </Link>
+              <NavigationMenuLink
+                className={navigationMenuTriggerStyle()}
+                href="/hospital/pacientes"
+              >
+                <UsersRound className="mr-2" />
+                Pacientes
+              </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link href="/hospital/leitos" legacyBehavior passHref>
-                <a className={navigationMenuTriggerStyle()}>Leitos</a>
-              </Link>
+              <NavigationMenuLink
+                className={navigationMenuTriggerStyle()}
+                href="/hospital/leitos"
+              >
+                <BedSingle className="mr-2" />
+                Leitos
+              </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link href="/hospital/painel" legacyBehavior passHref>
-                <a className={navigationMenuTriggerStyle()}>Painel</a>
-              </Link>
+              <NavigationMenuLink
+                className={navigationMenuTriggerStyle()}
+                href="/hospital/feedback"
+              >
+                <MessageCircleMore className="mr-2" />
+                Satisfação
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink
+                className={navigationMenuTriggerStyle()}
+                href="/hospital/painel"
+              >
+                <TvMinimal className="mr-2" />
+                Painel
+              </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <ModeToggle />
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+        <NavigationMenu className="mr-5 mt-5 w-screen">
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <NavigationMenuLink
+                className={navigationMenuTriggerStyle()}
+                onClick={handleSairButton}
+              >
+                <LogOut className="mr-2" />
+                Sair
+              </NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
@@ -78,32 +153,74 @@ export default function NavbarHospital() {
                 </SheetTrigger>
                 <SheetContent>
                   <SheetTitle>
-                    <Link href="/hospital" legacyBehavior passHref>
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                      href="/hospital"
+                    >
+                      <Home className="mr-2" />
                       Home
-                    </Link>
+                    </NavigationMenuLink>
                   </SheetTitle>
-                  <SheetTitle>
-                    <Link href="/hospital/chamados" legacyBehavior passHref>
+                  <SheetTitle className="flex">
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                      href="/hospital/chamados"
+                    >
+                      <ClipboardList className="mr-2" />
                       Chamados
-                    </Link>
+                    </NavigationMenuLink>
                   </SheetTitle>
                   <SheetTitle>
-                    <Link href="/hospital/pacientes" legacyBehavior passHref>
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                      href="/hospital/pacientes"
+                    >
+                      <UsersRound className="mr-2" />
                       Pacientes
-                    </Link>
+                    </NavigationMenuLink>
                   </SheetTitle>
                   <SheetTitle>
-                    <Link href="/hospital/leitos" legacyBehavior passHref>
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                      href="/hospital/leitos"
+                    >
+                      <BedSingle className="mr-2" />
                       Leitos
-                    </Link>
+                    </NavigationMenuLink>
                   </SheetTitle>
                   <SheetTitle>
-                    <Link href="/hospital/painel" legacyBehavior passHref>
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                      href="/hospital/painel"
+                    >
+                      <TvMinimal className="mr-2" />
                       Painel
-                    </Link>
+                    </NavigationMenuLink>
+                  </SheetTitle>
+                  <SheetTitle>
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                      href="/hospital/feedback"
+                    >
+                      <MessageCircleMore className="mr-2" />
+                      Satisfação
+                    </NavigationMenuLink>
+                  </SheetTitle>
+                  <SheetTitle>
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                      onClick={handleSairButton}
+                    >
+                      <LogOut className="mr-2" />
+                      Sair
+                    </NavigationMenuLink>
                   </SheetTitle>
                   <SheetTitle className="my-2">
-                    <ModeToggle />
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                    >
+                      <ModeToggle />
+                    </NavigationMenuLink>
                   </SheetTitle>
                 </SheetContent>
               </Sheet>

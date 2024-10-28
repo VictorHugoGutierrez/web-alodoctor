@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  ChevronDownIcon,
-  DotsHorizontalIcon,
-  PlusIcon,
-} from '@radix-ui/react-icons';
+import { ChevronDownIcon } from '@radix-ui/react-icons';
 
 import {
   ColumnDef,
@@ -20,13 +16,10 @@ import {
 } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
@@ -40,29 +33,22 @@ import {
 } from '@/components/ui/table';
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/axios';
-import { sonnerMessage } from '@/lib/sonnerMessage';
-import { Chamado } from './dtChamadosHospital';
-import PerfilPacienteHospital from './perfilPacienteHospital';
 
-export type Paciente = {
+export type Satisfacao = {
   id: number;
   nome: string;
   email: string;
-  dataNascimento: string;
-  qtdChamados: Chamado[];
-  leito?: string | null;
+  level: string;
+  comentario: string;
+  editado: string;
+  criado: string;
 };
 
-export function DtPacientesHospital() {
-  const [data, setData] = useState<Paciente[]>([]);
+export function DtSatisfacaoHospital() {
+  const [data, setData] = useState<Satisfacao[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [openDialog, setOpenDialog] = useState(false);
-  const [openDialogEditar, setOpenDialogEditar] = useState(false);
-  const [selectedPacienteId, setSelectedPacienteId] = useState<
-    number | undefined
-  >();
 
   useEffect(() => {
     fetchData();
@@ -70,33 +56,36 @@ export function DtPacientesHospital() {
 
   const fetchData = async () => {
     try {
-      const response = await api.get(`/pacientes`);
-      setData(response.data.pacientes);
+      const response = await api.get(`/pacientes/satisfacao`);
+      setData(response.data.satisfacao);
     } catch (error) {
-      console.error('Erro ao buscar os pacientes:', error);
+      console.error('Erro ao buscar as satisfações:', error);
     }
   };
 
-  const handleDelete = async (id: number) => {
-    try {
-      const response = await api.delete(`/pacientes/${id}`);
-      if (response.status === 200) {
-        sonnerMessage('Paciente', 'Paciente excluído.', 'success');
-        setData((prevData) => prevData.filter((c) => c.id !== id));
-      } else {
-        sonnerMessage('Paciente', 'Erro ao excluir o paciente.', 'error');
-      }
-    } catch (error) {
-      console.error('Erro ao excluir o paciente:', error);
-      sonnerMessage(
-        'Paciente',
-        'Erro ao excluir o paciente. Por favor, tente novamente.',
-        'error'
-      );
+  const formatLevel = (level: string) => {
+    switch (level) {
+      case 'SATISFEITO':
+        return 'Satisfeito';
+      case 'NEUTRO':
+        return 'Neutro';
+      case 'INSATISFEITO':
+        return 'Insatisfeito';
+      default:
+        return level;
     }
   };
 
-  const columns: ColumnDef<Paciente>[] = [
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  };
+
+  const columns: ColumnDef<Satisfacao>[] = [
     {
       accessorKey: 'nome',
       header: 'Nome',
@@ -106,77 +95,23 @@ export function DtPacientesHospital() {
       header: 'Email',
     },
     {
-      accessorKey: 'dataNascimento',
-      header: 'Data de Nascimento',
-      cell: ({ row }) => {
-        const data = row.original.dataNascimento;
-        const [year, month, day] = data.split('T')[0].split('-');
-        const dataNascimento = `${day}/${month}/${year}`;
-
-        return dataNascimento;
-      },
+      accessorKey: 'level',
+      header: 'Nível',
+      cell: ({ row }) => formatLevel(row.original.level),
     },
     {
-      accessorKey: 'chamados',
-      header: 'Qtd. de Chamados',
-      cell: ({ row }) => row.original.qtdChamados,
+      accessorKey: 'comentario',
+      header: 'Comentário',
     },
     {
-      accessorKey: 'leito',
-      header: 'Leito',
-      cell: ({ row }) =>
-        row.original.leito ? `Leito ${row.original.leito}` : 'Sem Leito',
+      accessorKey: 'editado',
+      header: 'Editado em',
+      cell: ({ row }) => formatDate(row.original.editado),
     },
     {
-      id: 'actions',
-      enableHiding: false,
-      cell: ({ row }) => {
-        const paciente = row.original;
-
-        return (
-          <>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Abrir menu</span>
-                  <DotsHorizontalIcon className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => handleDelete(paciente.id)}>
-                  Excluir
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    setOpenDialogEditar(true);
-                    setSelectedPacienteId(paciente.id);
-                  }}
-                >
-                  Editar
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {openDialogEditar && (
-              <>
-                <PerfilPacienteHospital
-                  id={selectedPacienteId}
-                  openDialog={openDialogEditar}
-                  onOpenChange={(open) => {
-                    setOpenDialogEditar(open);
-                    if (!open) {
-                      fetchData();
-                    }
-                  }}
-                  edita={true}
-                  readOnly={false}
-                />
-              </>
-            )}
-          </>
-        );
-      },
+      accessorKey: 'criado',
+      header: 'Criado em',
+      cell: ({ row }) => formatDate(row.original.criado),
     },
   ];
 
@@ -208,26 +143,6 @@ export function DtPacientesHospital() {
           }
           className="max-w-sm"
         />
-        <Button
-          variant="outline"
-          className="mx-4"
-          onClick={() => setOpenDialog(true)}
-        >
-          Criar <PlusIcon className="ml-2 h-4 w-4" />
-        </Button>
-        {openDialog && (
-          <PerfilPacienteHospital
-            openDialog={openDialog}
-            onOpenChange={(open) => {
-              setOpenDialog(open);
-              if (!open) {
-                fetchData();
-              }
-            }}
-            edita={true}
-            readOnly={false}
-          />
-        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

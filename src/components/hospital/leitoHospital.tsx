@@ -15,6 +15,7 @@ import { Button } from '../ui/button';
 
 interface Leito {
   numero: string;
+  Paciente: { nome: string };
 }
 
 interface LeitoHospitalProps {
@@ -30,6 +31,7 @@ export default function LeitoHospital({
 }: LeitoHospitalProps) {
   const [leito, setLeito] = useState<Leito>({
     numero: '',
+    Paciente: { nome: '' },
   });
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -108,6 +110,17 @@ export default function LeitoHospital({
                 onChange={handleInputChange}
                 className="col-span-3"
                 required
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="numero">Paciente</Label>
+              <Input
+                id="numero"
+                type="text"
+                value={leito.Paciente ? leito.Paciente.nome : 'Sem paciente'}
+                onChange={handleInputChange}
+                className="col-span-3"
+                readOnly
               />
             </div>
             <DialogFooter>

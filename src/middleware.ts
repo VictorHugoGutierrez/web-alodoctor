@@ -20,21 +20,31 @@ export async function middleware(req: NextRequest) {
   const authTokenPaciente = req.cookies.get('authTokenPaciente')?.value;
   const authTokenHospital = req.cookies.get('authTokenHospital')?.value;
 
+  if (url.pathname.startsWith('/feedback')) {
+    return NextResponse.next();
+  }
+
   if (authTokenPaciente) {
     try {
       const paciente = await verifyPacienteToken(authTokenPaciente);
 
-      if (paciente && paciente.Leito) {
-        if (url.pathname === '/pacientes/espera' || url.pathname === '/') {
-          return NextResponse.redirect(new URL('/pacientes', req.url));
-        }
-      } else {
-        if (url.pathname === '/pacientes/espera') {
-          return NextResponse.next();
-        }
+      if (paciente) {
+        if (paciente.Leito) {
+          if (url.pathname === '/pacientes/espera' || url.pathname === '/') {
+            return NextResponse.redirect(new URL('/pacientes', req.url));
+          }
+        } else {
+          if (url.pathname === '/pacientes/espera') {
+            return NextResponse.next();
+          }
 
-        if (url.pathname.startsWith('/pacientes')) {
-          return NextResponse.redirect(new URL('/pacientes/espera', req.url));
+          if (url.pathname === '/') {
+            return NextResponse.redirect(new URL('/pacientes/espera', req.url));
+          }
+
+          if (url.pathname.startsWith('/pacientes')) {
+            return NextResponse.redirect(new URL('/pacientes/espera', req.url));
+          }
         }
       }
     } catch (error) {
@@ -68,5 +78,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/pacientes/:path*', '/hospital/:path*', '/'],
+  matcher: ['/pacientes/:path*', '/hospital/:path*', '/', '/feedback/:path*'],
 };
