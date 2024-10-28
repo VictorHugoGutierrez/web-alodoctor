@@ -96,6 +96,24 @@ export function DtPacientesHospital() {
     }
   };
 
+  const handleConcluirAtendimento = async (id: number) => {
+    try {
+      const response = await api.patch(`/pacientes/${id}`);
+      if (response.status === 200) {
+        sonnerMessage('Paciente', 'Atendimento concluído!', 'success');
+      } else {
+        sonnerMessage('Paciente', 'Erro ao concluir o atendimento.', 'error');
+      }
+    } catch (error) {
+      console.error('Erro ao concluir o atendimento:', error);
+      sonnerMessage(
+        'Paciente',
+        'Erro ao concluir o atendimento Por favor, tente novamente.',
+        'error'
+      );
+    }
+  };
+
   const columns: ColumnDef<Paciente>[] = [
     {
       accessorKey: 'nome',
@@ -154,6 +172,11 @@ export function DtPacientesHospital() {
                   }}
                 >
                   Editar
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handleConcluirAtendimento(paciente.id)}
+                >
+                  Concluir Atendimento
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

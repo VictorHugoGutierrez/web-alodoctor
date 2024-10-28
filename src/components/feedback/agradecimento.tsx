@@ -1,3 +1,5 @@
+// Agradecimento.tsx
+
 'use client';
 
 import ModeToggle from '@/components/themeButton';
@@ -12,7 +14,6 @@ import {
 } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/label';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Dispatch, FormEvent, SetStateAction, useState } from 'react';
 import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
@@ -30,6 +31,7 @@ import {
 } from '@/components/ui/popover';
 import { api } from '@/lib/axios';
 import { sonnerMessage } from '@/lib/sonnerMessage';
+import { useRouter } from 'next/navigation';
 
 interface LevelComboboxProps {
   onChange: Dispatch<SetStateAction<string>>;
@@ -97,24 +99,27 @@ const LevelCombobox: React.FC<LevelComboboxProps> = ({
   );
 };
 
-export default function Agradecimento() {
+interface AgradecimentoProps {
+  id: string | null;
+  levelFromUrl: string | null;
+}
+
+export default function Agradecimento(props: AgradecimentoProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const id = searchParams.get('id');
-  const levelFromUrl = searchParams.get('level');
-
   const [comentario, setComentario] = useState('');
-  const [selectedLevel, setSelectedLevel] = useState(levelFromUrl || '');
+  const [selectedLevel, setSelectedLevel] = useState(props.levelFromUrl || '');
 
   const handleSubmitFeedback = async (e?: FormEvent) => {
     if (e) e.preventDefault();
 
     try {
-      const response = await api.post(`/pacientes/${Number(id)}/satisfacao`, {
-        level: selectedLevel,
-        comentario: comentario,
-      });
+      const response = await api.post(
+        `/pacientes/${Number(props.id)}/satisfacao`,
+        {
+          level: selectedLevel,
+          comentario: comentario,
+        }
+      );
 
       if (response.status === 200) {
         sonnerMessage(
@@ -134,50 +139,45 @@ export default function Agradecimento() {
   };
 
   return (
-    <>
-      <head>
-        <title>Feedback | Paciente</title>
-      </head>
-      <div className="h-screen w-screen flex items-center justify-center">
-        <form onSubmit={handleSubmitFeedback}>
-          <Card>
-            <div className="flex items-center">
-              <CardHeader>
-                <CardTitle>Feedback</CardTitle>
-                <CardDescription>Deixe sua avaliação aqui!</CardDescription>
-              </CardHeader>
-              <Avatar className="w-40 h-20 ml-auto items-end">
-                <AvatarImage src="/alodoctor-logo.svg" />
-                <AvatarFallback>Logo</AvatarFallback>
-              </Avatar>
-            </div>
-            <CardContent className="space-y-2">
-              <div className="space-y-1">
-                <Label htmlFor="level">Nível de Satisfação:</Label>
-                <div>
-                  <LevelCombobox
-                    selectedLevel={selectedLevel}
-                    onChange={setSelectedLevel}
-                  />
-                </div>
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="comentario">Comentários da Avaliação:</Label>
-                <Input
-                  id="comentario"
-                  type="text"
-                  onChange={(e) => setComentario(e.target.value)}
-                  required
+    <div className="h-screen w-screen flex items-center justify-center">
+      <form onSubmit={handleSubmitFeedback}>
+        <Card>
+          <div className="flex items-center">
+            <CardHeader>
+              <CardTitle>Feedback</CardTitle>
+              <CardDescription>Deixe sua avaliação aqui!</CardDescription>
+            </CardHeader>
+            <Avatar className="w-40 h-20 ml-auto items-end">
+              <AvatarImage src="/alodoctor-logo.svg" />
+              <AvatarFallback>Logo</AvatarFallback>
+            </Avatar>
+          </div>
+          <CardContent className="space-y-2">
+            <div className="space-y-1">
+              <Label htmlFor="level">Nível de Satisfação:</Label>
+              <div>
+                <LevelCombobox
+                  selectedLevel={selectedLevel}
+                  onChange={setSelectedLevel}
                 />
               </div>
-            </CardContent>
-            <CardFooter className="gap-2">
-              <Button type="submit">Enviar</Button>
-              <ModeToggle />
-            </CardFooter>
-          </Card>
-        </form>
-      </div>
-    </>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="comentario">Comentários da Avaliação:</Label>
+              <Input
+                id="comentario"
+                type="text"
+                onChange={(e) => setComentario(e.target.value)}
+                required
+              />
+            </div>
+          </CardContent>
+          <CardFooter className="gap-2">
+            <Button type="submit">Enviar</Button>
+            <ModeToggle />
+          </CardFooter>
+        </Card>
+      </form>
+    </div>
   );
 }
