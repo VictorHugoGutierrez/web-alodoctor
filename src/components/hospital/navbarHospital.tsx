@@ -25,6 +25,7 @@ import {
   TvMinimal,
   LogOut,
   MessageCircleMore,
+  Cross,
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 import { sonnerMessage } from '@/lib/sonnerMessage';
@@ -84,7 +85,7 @@ export default function NavbarHospital() {
                 className={navigationMenuTriggerStyle()}
                 href="/hospital/pacientes"
               >
-                <UsersRound className="mr-2" />
+                <Cross className="mr-2" />
                 Pacientes
               </NavigationMenuLink>
             </NavigationMenuItem>
@@ -102,7 +103,7 @@ export default function NavbarHospital() {
                 className={navigationMenuTriggerStyle()}
                 href="/hospital/usuarios"
               >
-                <BedSingle className="mr-2" />
+                <UsersRound className="mr-2" />
                 Usuários
               </NavigationMenuLink>
             </NavigationMenuItem>
@@ -184,7 +185,7 @@ export default function NavbarHospital() {
                       className={navigationMenuTriggerStyle()}
                       href="/hospital/pacientes"
                     >
-                      <UsersRound className="mr-2" />
+                      <Cross className="mr-2" />
                       Pacientes
                     </NavigationMenuLink>
                   </SheetTitle>
@@ -202,7 +203,7 @@ export default function NavbarHospital() {
                       className={navigationMenuTriggerStyle()}
                       href="/hospital/usuarios"
                     >
-                      <BedSingle className="mr-2" />
+                      <UsersRound className="mr-2" />
                       Usuários
                     </NavigationMenuLink>
                   </SheetTitle>
