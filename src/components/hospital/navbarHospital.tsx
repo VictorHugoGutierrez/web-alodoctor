@@ -100,6 +100,15 @@ export default function NavbarHospital() {
             <NavigationMenuItem>
               <NavigationMenuLink
                 className={navigationMenuTriggerStyle()}
+                href="/hospital/usuarios"
+              >
+                <BedSingle className="mr-2" />
+                Usuários
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink
+                className={navigationMenuTriggerStyle()}
                 href="/hospital/feedback"
               >
                 <MessageCircleMore className="mr-2" />
@@ -186,6 +195,15 @@ export default function NavbarHospital() {
                     >
                       <BedSingle className="mr-2" />
                       Leitos
+                    </NavigationMenuLink>
+                  </SheetTitle>
+                  <SheetTitle>
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                      href="/hospital/usuarios"
+                    >
+                      <BedSingle className="mr-2" />
+                      Usuários
                     </NavigationMenuLink>
                   </SheetTitle>
                   <SheetTitle>

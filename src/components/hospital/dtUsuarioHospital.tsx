@@ -5,6 +5,7 @@ import {
   DotsHorizontalIcon,
   PlusIcon,
 } from '@radix-ui/react-icons';
+
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -19,7 +20,6 @@ import {
 } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -40,108 +40,121 @@ import {
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/axios';
 import { sonnerMessage } from '@/lib/sonnerMessage';
-import AssociaPacienteLeito from './associarPacienteLeito';
-import DesassociaPacienteLeito from './desassociaPacienteLeito';
-import LeitoHospital from './leitoHospital';
+import UsuarioHospital from './usuarioHospital';
 
-export type Leito = {
+export type Usuarios = {
   id: number;
-  numero: string;
-  Paciente?: { nome: string } | null;
+  username: string;
+  email: string;
+  senha: string;
+  role: string;
 };
 
-export function DtLeitosHospital() {
-  const [data, setData] = useState<Leito[]>([]);
+export function DtUsuariosHospital() {
+  const [data, setData] = useState<Usuarios[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [openDialogAssocia, setOpenDialogAssocia] = useState(false);
-  const [openDialogDesassocia, setOpenDialogDesassocia] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const [openDialogEditar, setOpenDialogEditar] = useState(false);
-  const [openDialogCriar, setOpenDialogCriar] = useState(false);
-  const [selectedLeitoId, setselectedLeitoId] = useState<number>();
+  const [seletedUsuarioId, setSeletedUsuarioId] = useState<
+    number | undefined
+  >();
+  const [userRole, setUserRole] = useState<'ADM' | 'MASTER' | null>(null);
 
   useEffect(() => {
-    if (!openDialogAssocia && !openDialogDesassocia) {
-      fetchData();
-    }
-  }, [openDialogAssocia, openDialogDesassocia]);
+    fetchData();
+    checkUserRole();
+  }, []);
 
   const fetchData = async () => {
     try {
-      const response = await api.get(`/leitos`);
-      setData(response.data.leitos);
+      const response = await api.get(`/usuarios`);
+      setData(response.data.usuarios);
     } catch (error) {
-      console.error('Erro ao buscar os leitos:', error);
+      console.error('Erro ao buscar os usuários:', error);
     }
   };
 
-  const columns: ColumnDef<Leito>[] = [
+  const checkUserRole = async () => {
+    try {
+      const token = document.cookie.split('authTokenHospital=')[1] || '';
+      if (token) {
+        const response = await api.post('/token/hospital', {
+          token,
+        });
+        setUserRole(response.data.hospital.user.role);
+      }
+    } catch (error) {
+      console.error('Erro ao verificar o papel do usuário:', error);
+      setUserRole(null);
+    }
+  };
+
+  const formatRole = (role: string) => {
+    switch (role) {
+      case 'MASTER':
+        return 'Master';
+      case 'ADM':
+        return 'Administrador';
+      case 'FUNCIONARIO':
+        return 'Funcionário';
+      default:
+        return role;
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!userRole || (userRole !== 'ADM' && userRole !== 'MASTER')) {
+      sonnerMessage(
+        'Usuário',
+        'Você não tem permissão para excluir usuários.',
+        'error'
+      );
+      return;
+    }
+
+    try {
+      const response = await api.delete(`/usuarios/${id}`);
+      if (response.status === 200) {
+        sonnerMessage('Usuário', 'Usuário excluído.', 'success');
+        setData((prevData) => prevData.filter((c) => c.id !== id));
+      } else {
+        sonnerMessage('Usuário', 'Erro ao excluir o usuário.', 'error');
+      }
+    } catch (error) {
+      console.error('Erro ao excluir o usuário:', error);
+      sonnerMessage(
+        'Usuário',
+        'Erro ao excluir o usuário. Por favor, tente novamente.',
+        'error'
+      );
+    }
+  };
+
+  const columns: ColumnDef<Usuarios>[] = [
     {
-      accessorKey: 'numero',
-      header: 'Numero do Leito',
+      accessorKey: 'username',
+      header: 'Usuário',
     },
     {
-      accessorKey: 'Paciente.nome',
-      header: 'Nome Paciente',
-      cell: ({ row }) =>
-        row.original.Paciente?.nome
-          ? row.original.Paciente.nome
-          : 'Sem paciente',
+      accessorKey: 'email',
+      header: 'Email',
     },
     {
-      id: 'situacao',
-      header: 'Situação',
-      cell: ({ row }) => (row.original.Paciente ? 'Ocupado' : 'Disponível'),
-      enableSorting: false,
+      accessorKey: 'password',
+      header: 'Senha',
+    },
+    {
+      accessorKey: 'role',
+      header: 'Permissão',
+      cell: ({ row }) => formatRole(row.original.role),
     },
     {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        const leito = row.original;
-
-        const handleOpenDialogAssocia = () => {
-          if (leito.Paciente) {
-            sonnerMessage('Erro', 'Este leito já está ocupado.', 'error');
-          } else {
-            setOpenDialogAssocia(true);
-            setselectedLeitoId(leito.id);
-          }
-        };
-
-        const handleOpenDialogDesassocia = () => {
-          if (!leito.Paciente) {
-            sonnerMessage('Erro', 'Este leito já está desocupado.', 'error');
-          } else {
-            setOpenDialogDesassocia(true);
-            setselectedLeitoId(leito.id);
-          }
-        };
-
-        const handleOpenDialogEditar = () => {
-          setOpenDialogEditar(true);
-          setselectedLeitoId(leito.id);
-        };
-
-        const handleDelete = async (id: number) => {
-          try {
-            const response = await api.delete(`/leitos/${id}`);
-            if (response.status === 200) {
-              sonnerMessage('Leito', 'Leito excluído com sucesso.', 'success');
-              setData((prevData) => prevData.filter((c) => c.id !== id));
-            } else {
-              sonnerMessage('Leito', 'Erro ao excluir o leito.', 'error');
-            }
-          } catch (error) {
-            console.error('Erro ao excluir o leito:', error);
-            sonnerMessage(
-              'Leito',
-              'Erro ao excluir o leito. Por favor, tente novamente.',
-              'error'
-            );
-          }
-        };
+        const usuario = row.original;
 
         return (
           <>
@@ -154,48 +167,44 @@ export function DtLeitosHospital() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => handleOpenDialogAssocia()}>
-                  Associar paciente
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleOpenDialogDesassocia()}>
-                  Desassociar paciente
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleOpenDialogEditar()}>
-                  Editar
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleDelete(leito.id)}>
+                <DropdownMenuItem onClick={() => handleDelete(usuario.id)}>
                   Excluir
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    if (
+                      userRole &&
+                      (userRole === 'ADM' || userRole === 'MASTER')
+                    ) {
+                      setOpenDialogEditar(true);
+                      setSeletedUsuarioId(usuario.id);
+                    } else {
+                      sonnerMessage(
+                        'Usuário',
+                        'Você não tem permissão para editar usuários.',
+                        'error'
+                      );
+                    }
+                  }}
+                >
+                  Editar
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {openDialogAssocia && (
-              <AssociaPacienteLeito
-                openDialog={openDialogAssocia}
-                onOpenChange={setOpenDialogAssocia}
-                leitoId={selectedLeitoId}
-              />
-            )}
-
-            {openDialogDesassocia && (
-              <DesassociaPacienteLeito
-                openDialog={openDialogDesassocia}
-                onOpenChange={setOpenDialogDesassocia}
-                leitoId={selectedLeitoId}
-              />
-            )}
-
             {openDialogEditar && (
-              <LeitoHospital
-                id={selectedLeitoId}
-                openDialog={openDialogEditar}
-                onOpenChange={(open) => {
-                  setOpenDialogEditar(open);
-                  if (!open) {
-                    fetchData();
-                  }
-                }}
-              />
+              <>
+                <UsuarioHospital
+                  id={seletedUsuarioId}
+                  openDialog={openDialogEditar}
+                  onOpenChange={(open) => {
+                    setOpenDialogEditar(open);
+                    if (!open) {
+                      fetchData();
+                    }
+                  }}
+                />
+              </>
             )}
           </>
         );
@@ -224,25 +233,35 @@ export function DtLeitosHospital() {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filtrar número..."
-          value={(table.getColumn('numero')?.getFilterValue() as string) ?? ''}
+          placeholder="Filtrar nome..."
+          value={(table.getColumn('nome')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('numero')?.setFilterValue(event.target.value)
+            table.getColumn('nome')?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
         <Button
           variant="outline"
           className="mx-4"
-          onClick={() => setOpenDialogCriar(true)}
+          onClick={() => {
+            if (userRole && (userRole === 'ADM' || userRole === 'MASTER')) {
+              setOpenDialog(true);
+            } else {
+              sonnerMessage(
+                'Usuário',
+                'Você não tem permissão para criar usuários.',
+                'error'
+              );
+            }
+          }}
         >
           Criar <PlusIcon className="ml-2 h-4 w-4" />
         </Button>
-        {openDialogCriar && (
-          <LeitoHospital
-            openDialog={openDialogCriar}
+        {openDialog && (
+          <UsuarioHospital
+            openDialog={openDialog}
             onOpenChange={(open) => {
-              setOpenDialogCriar(open);
+              setOpenDialog(open);
               if (!open) {
                 fetchData();
               }
