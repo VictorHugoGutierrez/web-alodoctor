@@ -97,6 +97,19 @@ export function DtChamadosPainel() {
     };
   }, [router]);
 
+  const priorityOrder = (priority: string) => {
+    switch (priority) {
+      case 'Alta':
+        return 1;
+      case 'Média':
+        return 2;
+      case 'Baixa':
+        return 3;
+      default:
+        return 4;
+    }
+  };
+
   const columns: ColumnDef<Chamado>[] = [
     {
       accessorKey: 'descricao',
@@ -105,6 +118,9 @@ export function DtChamadosPainel() {
     {
       accessorKey: 'prioridade',
       header: 'Prioridade',
+      sortingFn: (a, b) =>
+        priorityOrder(a.original.prioridade) -
+        priorityOrder(b.original.prioridade),
     },
     {
       accessorKey: 'paciente.nome',
@@ -124,7 +140,7 @@ export function DtChamadosPainel() {
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     state: {
-      sorting,
+      sorting: [{ id: 'prioridade', desc: false }],
     },
   });
 
