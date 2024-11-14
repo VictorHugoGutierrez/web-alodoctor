@@ -28,6 +28,10 @@ export default function Home() {
     }
   };
 
+  const backToHome = async () => {
+    router.push('/hospital');
+  };
+
   useEffect(() => {
     const handleFullScreenChange = () => {
       if (!document.fullscreenElement) {
@@ -50,9 +54,18 @@ export default function Home() {
       <div className="m-5">
         <div className="flex items-center py-4">
           {!isFullScreen && (
-            <Button variant="outline" onClick={() => enterFullScreen()}>
-              Entrar em tela cheia
-            </Button>
+            <>
+              <Button variant="outline" onClick={() => enterFullScreen()}>
+                Entrar em tela cheia
+              </Button>
+              <Button
+                variant="outline"
+                className="mx-4"
+                onClick={() => backToHome()}
+              >
+                Voltar
+              </Button>
+            </>
           )}
         </div>
         <DtChamadosPainel />

@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  CaretSortIcon,
-  ChevronDownIcon,
-  DotsHorizontalIcon,
-} from '@radix-ui/react-icons';
+import { ChevronDownIcon, DotsHorizontalIcon } from '@radix-ui/react-icons';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -19,7 +15,6 @@ import {
 } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -44,6 +39,7 @@ import { sonnerMessage } from '@/lib/sonnerMessage';
 export type Chamado = {
   id: number;
   descricao: string;
+  createdAt: string;
   prioridade: string;
   paciente: {
     nome: string;
@@ -55,7 +51,9 @@ export type Chamado = {
 
 export function DataTableDemo() {
   const [data, setData] = useState<Chamado[]>([]);
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'prioridade', desc: false },
+  ]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
@@ -68,6 +66,7 @@ export function DataTableDemo() {
         const { paciente } = responsePaciente.data;
 
         const response = await api.get(`/chamados/paciente/${paciente.id}`);
+        console.log(response.data.chamados);
         setData(response.data.chamados);
       } catch (error) {
         console.error('Erro ao buscar os chamados:', error);
@@ -98,28 +97,6 @@ export function DataTableDemo() {
 
   const columns: ColumnDef<Chamado>[] = [
     {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Selecionar todos"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Selecionar linha"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
       accessorKey: 'descricao',
       header: 'Descrição',
     },
@@ -134,6 +111,11 @@ export function DataTableDemo() {
     {
       accessorKey: 'leito.numero',
       header: 'Leito',
+    },
+    {
+      accessorKey: 'createdAt',
+      header: 'Criado em',
+      cell: ({ row }) => new Date(row.getValue('createdAt')).toLocaleString(),
     },
     {
       id: 'actions',
@@ -167,7 +149,6 @@ export function DataTableDemo() {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -220,7 +201,7 @@ export function DataTableDemo() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border h-64 overflow-y-auto overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -269,12 +250,6 @@ export function DataTableDemo() {
             )}
           </TableBody>
         </Table>
-      </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} de{' '}
-          {table.getFilteredRowModel().rows.length} linha(s) selecionada(s).
-        </div>
       </div>
     </div>
   );

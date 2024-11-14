@@ -5,7 +5,6 @@ import {
   SortingState,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
@@ -32,11 +31,15 @@ export type Chamado = {
   leito: {
     numero: string;
   };
+  createdAt: string;
 };
 
 export function DtChamadosPainel() {
   const [data, setData] = useState<Chamado[]>([]);
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'prioridade', desc: false },
+    { id: 'createdAt', desc: true },
+  ]);
 
   const fetchData = async () => {
     try {
@@ -92,18 +95,23 @@ export function DtChamadosPainel() {
       accessorKey: 'leito.numero',
       header: 'Leito',
     },
+    {
+      accessorKey: 'createdAt',
+      header: 'Criado em',
+      cell: ({ row }) => new Date(row.getValue('createdAt')).toLocaleString(),
+      sortingFn: (a, b) =>
+        new Date(a.original.createdAt).getTime() -
+        new Date(b.original.createdAt).getTime(),
+    },
   ];
 
   const table = useReactTable({
     data,
     columns,
+    state: { sorting },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    state: {
-      sorting: [{ id: 'prioridade', desc: false }],
-    },
   });
 
   return (

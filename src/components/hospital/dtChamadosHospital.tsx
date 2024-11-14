@@ -9,13 +9,11 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -42,6 +40,7 @@ export type Chamado = {
   id: number;
   descricao: string;
   prioridade: string;
+  createdAt: string;
   paciente: {
     id: number;
     nome: string;
@@ -53,7 +52,10 @@ export type Chamado = {
 
 export function DtChamadosHospital() {
   const [data, setData] = useState<Chamado[]>([]);
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'prioridade', desc: false },
+    { id: 'createdAt', desc: true },
+  ]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
@@ -92,6 +94,19 @@ export function DtChamadosHospital() {
     }
   };
 
+  const priorityOrder = (priority: string) => {
+    switch (priority) {
+      case 'Alta':
+        return 1;
+      case 'Média':
+        return 2;
+      case 'Baixa':
+        return 3;
+      default:
+        return 4;
+    }
+  };
+
   const columns: ColumnDef<Chamado>[] = [
     {
       accessorKey: 'descricao',
@@ -100,6 +115,9 @@ export function DtChamadosHospital() {
     {
       accessorKey: 'prioridade',
       header: 'Prioridade',
+      sortingFn: (a, b) =>
+        priorityOrder(a.original.prioridade) -
+        priorityOrder(b.original.prioridade),
     },
     {
       accessorKey: 'paciente.nome',
@@ -108,6 +126,14 @@ export function DtChamadosHospital() {
     {
       accessorKey: 'leito.numero',
       header: 'Leito',
+    },
+    {
+      accessorKey: 'createdAt',
+      header: 'Criado em',
+      cell: ({ row }) => new Date(row.getValue('createdAt')).toLocaleString(),
+      sortingFn: (a, b) =>
+        new Date(a.original.createdAt).getTime() -
+        new Date(b.original.createdAt).getTime(),
     },
     {
       id: 'actions',
@@ -159,7 +185,6 @@ export function DtChamadosHospital() {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -183,6 +208,16 @@ export function DtChamadosHospital() {
             table.getColumn('descricao')?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
+        />
+        <Input
+          placeholder="Filtrar por prioridade..."
+          value={
+            (table.getColumn('prioridade')?.getFilterValue() as string) ?? ''
+          }
+          onChange={(event) =>
+            table.getColumn('prioridade')?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm ml-4"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
