@@ -217,7 +217,7 @@ export function DtChamadosHospital() {
           onChange={(event) =>
             table.getColumn('prioridade')?.setFilterValue(event.target.value)
           }
-          className="max-w-sm ml-4"
+          className="max-w-sm mx-4"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
