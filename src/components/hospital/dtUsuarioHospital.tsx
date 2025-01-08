@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
 import {
   ChevronDownIcon,
   DotsHorizontalIcon,
   PlusIcon,
-} from '@radix-ui/react-icons';
+} from "@radix-ui/react-icons";
 
 import {
   ColumnDef,
@@ -17,9 +17,9 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table';
+} from "@tanstack/react-table";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -27,8 +27,8 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -36,11 +36,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { useState, useEffect } from 'react';
-import { api } from '@/lib/axios';
-import { sonnerMessage } from '@/lib/sonnerMessage';
-import UsuarioHospital from './usuarioHospital';
+} from "@/components/ui/table";
+import { useState, useEffect } from "react";
+import { api } from "@/lib/axios";
+import { sonnerMessage } from "@/lib/sonnerMessage";
+import UsuarioHospital from "./usuarioHospital";
 
 export type Usuarios = {
   id: number;
@@ -60,7 +60,7 @@ export function DtUsuariosHospital() {
   const [seletedUsuarioId, setSeletedUsuarioId] = useState<
     number | undefined
   >();
-  const [userRole, setUserRole] = useState<'ADM' | 'MASTER' | null>(null);
+  const [userRole, setUserRole] = useState<"ADM" | "MASTER" | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -72,44 +72,44 @@ export function DtUsuariosHospital() {
       const response = await api.get(`/usuarios`);
       setData(response.data.usuarios);
     } catch (error) {
-      console.error('Erro ao buscar os usuários:', error);
+      console.error("Erro ao buscar os usuários:", error);
     }
   };
 
   const checkUserRole = async () => {
     try {
-      const token = document.cookie.split('authTokenHospital=')[1] || '';
+      const token = document.cookie.split("authTokenHospital=")[1] || "";
       if (token) {
-        const response = await api.post('/token/hospital', {
+        const response = await api.post("/token/hospital", {
           token,
         });
         setUserRole(response.data.hospital.user.role);
       }
     } catch (error) {
-      console.error('Erro ao verificar o papel do usuário:', error);
+      console.error("Erro ao verificar o papel do usuário:", error);
       setUserRole(null);
     }
   };
 
   const formatRole = (role: string) => {
     switch (role) {
-      case 'MASTER':
-        return 'Master';
-      case 'ADM':
-        return 'Administrador';
-      case 'FUNCIONARIO':
-        return 'Funcionário';
+      case "MASTER":
+        return "Master";
+      case "ADM":
+        return "Administrador";
+      case "FUNCIONARIO":
+        return "Funcionário";
       default:
         return role;
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!userRole || (userRole !== 'ADM' && userRole !== 'MASTER')) {
+    if (!userRole || (userRole !== "ADM" && userRole !== "MASTER")) {
       sonnerMessage(
-        'Usuário',
-        'Você não tem permissão para excluir usuários.',
-        'error'
+        "Usuário",
+        "Você não tem permissão para excluir usuários.",
+        "error"
       );
       return;
     }
@@ -117,41 +117,37 @@ export function DtUsuariosHospital() {
     try {
       const response = await api.delete(`/usuarios/${id}`);
       if (response.status === 200) {
-        sonnerMessage('Usuário', 'Usuário excluído.', 'success');
+        sonnerMessage("Usuário", "Usuário excluído.", "success");
         setData((prevData) => prevData.filter((c) => c.id !== id));
       } else {
-        sonnerMessage('Usuário', 'Erro ao excluir o usuário.', 'error');
+        sonnerMessage("Usuário", "Erro ao excluir o usuário.", "error");
       }
     } catch (error) {
-      console.error('Erro ao excluir o usuário:', error);
+      console.error("Erro ao excluir o usuário:", error);
       sonnerMessage(
-        'Usuário',
-        'Erro ao excluir o usuário. Por favor, tente novamente.',
-        'error'
+        "Usuário",
+        "Erro ao excluir o usuário. Por favor, tente novamente.",
+        "error"
       );
     }
   };
 
   const columns: ColumnDef<Usuarios>[] = [
     {
-      accessorKey: 'username',
-      header: 'Usuário',
+      accessorKey: "username",
+      header: "Usuário",
     },
     {
-      accessorKey: 'email',
-      header: 'Email',
+      accessorKey: "email",
+      header: "Email",
     },
     {
-      accessorKey: 'password',
-      header: 'Senha',
-    },
-    {
-      accessorKey: 'role',
-      header: 'Permissão',
+      accessorKey: "role",
+      header: "Permissão",
       cell: ({ row }) => formatRole(row.original.role),
     },
     {
-      id: 'actions',
+      id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
         const usuario = row.original;
@@ -174,15 +170,15 @@ export function DtUsuariosHospital() {
                   onClick={() => {
                     if (
                       userRole &&
-                      (userRole === 'ADM' || userRole === 'MASTER')
+                      (userRole === "ADM" || userRole === "MASTER")
                     ) {
                       setOpenDialogEditar(true);
                       setSeletedUsuarioId(usuario.id);
                     } else {
                       sonnerMessage(
-                        'Usuário',
-                        'Você não tem permissão para editar usuários.',
-                        'error'
+                        "Usuário",
+                        "Você não tem permissão para editar usuários.",
+                        "error"
                       );
                     }
                   }}
@@ -234,10 +230,10 @@ export function DtUsuariosHospital() {
         <Input
           placeholder="Filtrar usuário..."
           value={
-            (table.getColumn('username')?.getFilterValue() as string) ?? ''
+            (table.getColumn("username")?.getFilterValue() as string) ?? ""
           }
           onChange={(event) =>
-            table.getColumn('username')?.setFilterValue(event.target.value)
+            table.getColumn("username")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -245,13 +241,13 @@ export function DtUsuariosHospital() {
           variant="outline"
           className="mx-4"
           onClick={() => {
-            if (userRole && (userRole === 'ADM' || userRole === 'MASTER')) {
+            if (userRole && (userRole === "ADM" || userRole === "MASTER")) {
               setOpenDialog(true);
             } else {
               sonnerMessage(
-                'Usuário',
-                'Você não tem permissão para criar usuários.',
-                'error'
+                "Usuário",
+                "Você não tem permissão para criar usuários.",
+                "error"
               );
             }
           }}
@@ -321,7 +317,7 @@ export function DtUsuariosHospital() {
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
+                  data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
